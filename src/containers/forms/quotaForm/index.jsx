@@ -1,12 +1,19 @@
 import React, { useState } from 'react'
-import { TextField, InputAdornment, FormGroup } from '@material-ui/core'
+import { TextField, InputAdornment, FormGroup, Button, FormControlLabel, Checkbox } from '@material-ui/core'
 
 export default function (props) {
     const [amount, setAmount] = useState(0)
     const [quota, setQuota] = useState(2)
+    const [interest, setInterest] = useState(2)
+    const [iMode, setIntMode] = useState(false)
+
+    const handleSubmit = (event) => {
+        event.preventDefault()
+        props.onSubmit({ amount, quota, interest: !iMode ? parseFloat(interest) / 100 : (parseFloat(interest) / 100) / 12 })
+    }
 
     return (
-        <form>
+        <form onSubmit={handleSubmit}>
             <FormGroup>
                 <TextField
                     id='amount-input'
@@ -30,7 +37,32 @@ export default function (props) {
                         min: 2
                     }}
                 />
+                <FormGroup row>
+                    <TextField
+                        id='quota-quantity-input'
+                        label='Interés'
+                        type='number'
+                        value={interest}
+                        onChange={e => setInterest(e.target.value)}
+                        inputProps={{
+                            min: 0,
+                            step: 0.01
+                        }}
+                    />
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={iMode}
+                                onChange={() => setIntMode(!iMode)}
+                                value='imode'
+                                color="primary"
+                            />
+                        }
+                        label="Anual"
+                    />
+                </FormGroup>
             </FormGroup>
+            <Button type='submit'>Calcular</Button>
         </form>
     )
 }
